@@ -1,50 +1,41 @@
-module F-algebra where
-
 open import Level
 open import Data.Product
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality.Core
 open import Category as Cat hiding (_∘_)
 
-private
-  variable
-    c ℓ : Level
+module F-algebra {c ℓ} {C : Category c ℓ} {F : Endofunctor C} where
 
-F-algebra : ∀ (C : Category c ℓ) (F : Endofunctor C) → Set (c ⊔ ℓ)
-F-algebra C F = ∃[ x ] hom C (F [ x ]) x
+F-algebra : Set (c ⊔ ℓ)
+F-algebra = ∃[ x ] hom C (F [ x ]) x
 
-carrier : ∀ {C : Category c ℓ} F → F-algebra C F → ob C
-carrier F (X , α) = X
+carrier : F-algebra → ob C
+carrier (X , α) = X
   
-algebra : ∀ {C : Category c ℓ} F → (alg : F-algebra C F) → hom C (F [ carrier F alg ]) (carrier F alg)
-algebra F (X , α) = α
+algebra : (alg : F-algebra) → hom C (F [ carrier alg ]) (carrier alg)
+algebra (X , α) = α
 
 record FAlgebraHomomorphism
-  (C : Category c ℓ)
-  (F : Endofunctor C)
-  ([X,α] : F-algebra C F)
-  ([Y,β] : F-algebra C F)
+  ([X,α] : F-algebra)
+  ([Y,β] : F-algebra)
   : Set (c ⊔ ℓ) where
   private
-    X = carrier F [X,α]
-    Y = carrier F [Y,β]
-    α = algebra F [X,α]
-    β = algebra F [Y,β]
+    X = carrier [X,α]
+    Y = carrier [Y,β]
+    α = algebra [X,α]
+    β = algebra [Y,β]
     open Category C
   field
     m : hom C X Y
     m∘α≡β∘F[m] : m ∘ α ≡ β ∘ F ⟦ m ⟧
 
 infixr 5 _∘₁_
-_∘₁_ : ∀ {C : Category c ℓ} {F : Endofunctor C} {[X,α] [Y,β] [Z,γ]} →
-      FAlgebraHomomorphism C F [Y,β] [Z,γ] →
-      FAlgebraHomomorphism C F [X,α] [Y,β] →
-      FAlgebraHomomorphism C F [X,α] [Z,γ]
-_∘₁_ {C = C} {F = F}
-  {[X,α] = (X , α)}
-  {[Y,β] = (Y , β)}
-  {[Z,γ] = (Z , γ)}
-  g f = record {m = m; m∘α≡β∘F[m] = m∘α≡γ∘F[m]}
+_∘₁_ : ∀ {[X,α] [Y,β] [Z,γ]} →
+      FAlgebraHomomorphism [Y,β] [Z,γ] →
+      FAlgebraHomomorphism [X,α] [Y,β] →
+      FAlgebraHomomorphism [X,α] [Z,γ]
+_∘₁_ {[X,α] = (X , α)} {[Y,β] = (Y , β)} {[Z,γ] = (Z , γ)} g f =
+  record {m = m; m∘α≡β∘F[m] = m∘α≡γ∘F[m]}
   where
     open Category C
     open Functor F
