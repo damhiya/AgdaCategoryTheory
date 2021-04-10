@@ -1,5 +1,6 @@
 open import Level
 open import Data.Product
+open import Data.Product.Properties
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality.Core
 open import Category as Cat
@@ -109,13 +110,63 @@ InitialAlgebra = InitialObject FAlgebraCategory
 
 lambek : ((initial (X , α) ! !-unique) : InitialAlgebra) →
          IsIsomorphism C (F [ X ]) X α (proj₁ (! (F [ X ] , F ⟦ α ⟧)))
-lambek (initial (X , α) ! !-unique) = {!!}
+lambek (initial (X , α) ! !-unique) = i∘α≡F[idₓ] , α∘i≡idₓ
   where
-    F[X] : FAlgebra
-    F[X] = F [ X ] , F ⟦ α ⟧
+    open ≡-Reasoning
 
-    i,i-comm : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
-    i,i-comm = ! F[X]
+    F[X],F[α] : FAlgebra
+    F[X],F[α] = F [ X ] , F ⟦ α ⟧
+
+    [i] : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
+    [i] = ! F[X],F[α]
 
     i : hom C X (F [ X ])
-    i = proj₁ i,i-comm
+    i = proj₁ [i]
+
+    i∘α≡F[α]∘F[i] : i ∘ α ≡ F ⟦ α ⟧ ∘ F ⟦ i ⟧
+    i∘α≡F[α]∘F[i] = proj₂ [i]
+
+    [α] : [ F [ X ] , F ⟦ α ⟧ ]⟶[ X , α ]
+    [α] = α , refl
+
+    [α∘i] : [ X , α ]⟶[ X , α ]
+    [α∘i] = [α] ∘₁ [i]
+
+    [!ₓ] : [ X , α ]⟶[ X , α ]
+    [!ₓ] = ! (X , α)
+
+    !ₓ : hom C X X
+    !ₓ = proj₁ [!ₓ]
+
+    idₓ : hom C X X
+    idₓ = id
+
+    [idₓ] : [ X , α ]⟶[ X , α ]
+    [idₓ] = idₓ , idₓ∘α≡α∘F[idₓ]
+      where
+        idₓ∘α≡α∘F[idₓ] : idₓ ∘ α ≡ α ∘ F ⟦ idₓ ⟧
+        idₓ∘α≡α∘F[idₓ] = begin
+          idₓ ∘ α ≡⟨ id∘f≡f α ⟩
+          α ≡˘⟨ f∘id≡f α ⟩
+          α ∘ id {F [ X ]} ≡˘⟨ cong (α ∘_) respect-id ⟩
+          α ∘ F ⟦ idₓ ⟧ ∎
+
+    idₓ≡!ₓ : idₓ ≡ !ₓ
+    idₓ≡!ₓ = ,-injectiveˡ (!-unique (X , α) [idₓ])
+
+    α∘i≡!ₓ : α ∘ i ≡ !ₓ
+    α∘i≡!ₓ = ,-injectiveˡ (!-unique (X , α) [α∘i])
+
+    α∘i≡idₓ : α ∘ i ≡ idₓ
+    α∘i≡idₓ = trans α∘i≡!ₓ (sym idₓ≡!ₓ)
+
+    F[α]∘F[i]≡F[idₓ] : F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡ id {F [ X ]}
+    F[α]∘F[i]≡F[idₓ] = begin
+      F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡˘⟨ respect-∘ α i ⟩
+      F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡idₓ ⟩
+      F ⟦ idₓ ⟧ ≡⟨ respect-id ⟩
+      id ∎
+
+    i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
+    i∘α≡F[idₓ] = trans i∘α≡F[α]∘F[i] F[α]∘F[i]≡F[idₓ]
+  

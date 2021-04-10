@@ -102,6 +102,7 @@ IsIsomorphism C X Y f g = (g ∘ f ≡ id) × (f ∘ g ≡ id)
   where open Category C
 
 record Isomorphic (C : Category c ℓ) (X Y : ob C) : Set (c ⊔ ℓ) where
+  constructor iso
   open Category C
   field
     to : hom C X Y
