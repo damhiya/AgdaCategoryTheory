@@ -108,4 +108,3 @@ record Isomorphic (C : Category c ℓ) (X Y : ob C) : Set (c ⊔ ℓ) where
     to : hom C X Y
     from : hom C Y X
     isIsomorphism : IsIsomorphism C X Y to from
-

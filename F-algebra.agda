@@ -54,7 +54,6 @@ private
             a₁ ≡ a₂ → b₁ ≅ b₂ → p₁ ≡ p₂
   Σ-≡,≅→≡ refl refl = refl
 
-
 commute-irrelevant : ∀ {X Y α β} →
                      {f : [ X , α ]⟶[ Y , β ]} →
                      {g : [ X , α ]⟶[ Y , β ]} →
@@ -114,11 +113,8 @@ lambek (initial (X , α) ! !-unique) = i∘α≡F[idₓ] , α∘i≡idₓ
   where
     open ≡-Reasoning
 
-    F[X],F[α] : FAlgebra
-    F[X],F[α] = F [ X ] , F ⟦ α ⟧
-
     [i] : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
-    [i] = ! F[X],F[α]
+    [i] = ! (F [ X ] , F ⟦ α ⟧)
 
     i : hom C X (F [ X ])
     i = proj₁ [i]
@@ -169,4 +165,3 @@ lambek (initial (X , α) ! !-unique) = i∘α≡F[idₓ] , α∘i≡idₓ
 
     i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
     i∘α≡F[idₓ] = trans i∘α≡F[α]∘F[i] F[α]∘F[i]≡F[idₓ]
-  
