@@ -19,7 +19,7 @@ record IsCategory
   (id : Reflexive C₁)
   : Set (c ⊔ ℓ) where
   field
-    ∘-assoc : ∀ {x y z w} {f : C₁ x y} {g : C₁ y z} {h : C₁ z w} → (h ∘ g) ∘ f ≡ h ∘ (g ∘ f)
+    ∘-assoc : ∀ {x y z w} (h : C₁ z w) (g : C₁ y z) (f : C₁ x y) → (h ∘ g) ∘ f ≡ h ∘ (g ∘ f)
     id∘f≡f : ∀ {x y} (f : C₁ x y) → id ∘ f ≡ f
     f∘id≡f : ∀ {x y} (f : C₁ x y) → f ∘ id ≡ f
 
@@ -44,7 +44,7 @@ open Category using (id)
 infixr 9 _∘_
 _∘_ : ∀ {C : Category c ℓ} {x y z} → hom C y z → hom C x y → hom C x z
 _∘_ {C = C} = Category._∘_ C
-  
+
 record IsFunctor
   (C : Category c ℓ₁)
   (D : Category d ℓ₂)
@@ -55,7 +55,7 @@ record IsFunctor
   open Category D renaming (_∘_ to _∘₂_)
   field
     respect-id : ∀ {x} → F₁ (id C {x}) ≡ id D {F₀ x}
-    respect-∘ : ∀ {x y z} {f : hom C x y} {g : hom C y z} → F₁ (g ∘₁ f) ≡ F₁ g ∘₂ F₁ f
+    respect-∘ : ∀ {x y z} (g : hom C y z) (f : hom C x y) → F₁ (g ∘₁ f) ≡ F₁ g ∘₂ F₁ f
 
 record Functor
   (C : Category c ℓ₁)
