@@ -107,36 +107,31 @@ FAlgebraCategory = record
 InitialAlgebra : Set (c ⊔ ℓ)
 InitialAlgebra = InitialObject FAlgebraCategory
 
-lambek : ((initial (X , α) ! !-unique) : InitialAlgebra) →
-         IsIsomorphism C (F [ X ]) X α (proj₁ (! (F [ X ] , F ⟦ α ⟧)))
-lambek (initial (X , α) ! !-unique) = i∘α≡F[idₓ] , α∘i≡idₓ
-  where
-    open ≡-Reasoning
-
+module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
+  open ≡-Reasoning
+  
+  private
+    [α] : [ F [ X ] , F ⟦ α ⟧ ]⟶[ X , α ]
+    [α] = α , refl
+  
     [i] : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
     [i] = ! (F [ X ] , F ⟦ α ⟧)
-
+    
     i : hom C X (F [ X ])
     i = proj₁ [i]
 
-    i∘α≡F[α]∘F[i] : i ∘ α ≡ F ⟦ α ⟧ ∘ F ⟦ i ⟧
-    i∘α≡F[α]∘F[i] = proj₂ [i]
-
-    [α] : [ F [ X ] , F ⟦ α ⟧ ]⟶[ X , α ]
-    [α] = α , refl
-
     [α∘i] : [ X , α ]⟶[ X , α ]
     [α∘i] = [α] ∘₁ [i]
-
+ 
     [!ₓ] : [ X , α ]⟶[ X , α ]
     [!ₓ] = ! (X , α)
-
+ 
     !ₓ : hom C X X
     !ₓ = proj₁ [!ₓ]
-
+ 
     idₓ : hom C X X
     idₓ = id
-
+ 
     [idₓ] : [ X , α ]⟶[ X , α ]
     [idₓ] = idₓ , idₓ∘α≡α∘F[idₓ]
       where
@@ -146,22 +141,28 @@ lambek (initial (X , α) ! !-unique) = i∘α≡F[idₓ] , α∘i≡idₓ
           α ≡˘⟨ f∘id≡f α ⟩
           α ∘ id {F [ X ]} ≡˘⟨ cong (α ∘_) respect-id ⟩
           α ∘ F ⟦ idₓ ⟧ ∎
-
-    idₓ≡!ₓ : idₓ ≡ !ₓ
-    idₓ≡!ₓ = ,-injectiveˡ (!-unique (X , α) [idₓ])
-
-    α∘i≡!ₓ : α ∘ i ≡ !ₓ
-    α∘i≡!ₓ = ,-injectiveˡ (!-unique (X , α) [α∘i])
-
-    α∘i≡idₓ : α ∘ i ≡ idₓ
-    α∘i≡idₓ = trans α∘i≡!ₓ (sym idₓ≡!ₓ)
-
-    F[α]∘F[i]≡F[idₓ] : F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡ id {F [ X ]}
-    F[α]∘F[i]≡F[idₓ] = begin
-      F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡˘⟨ respect-∘ α i ⟩
-      F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡idₓ ⟩
-      F ⟦ idₓ ⟧ ≡⟨ respect-id ⟩
-      id ∎
-
-    i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
-    i∘α≡F[idₓ] = trans i∘α≡F[α]∘F[i] F[α]∘F[i]≡F[idₓ]
+ 
+  lambek : IsIsomorphism C (F [ X ]) X α i
+  lambek = i∘α≡F[idₓ] , α∘i≡idₓ
+    where
+      i∘α≡F[α]∘F[i] : i ∘ α ≡ F ⟦ α ⟧ ∘ F ⟦ i ⟧
+      i∘α≡F[α]∘F[i] = proj₂ [i]
+  
+      idₓ≡!ₓ : idₓ ≡ !ₓ
+      idₓ≡!ₓ = ,-injectiveˡ (!-unique (X , α) [idₓ])
+  
+      α∘i≡!ₓ : α ∘ i ≡ !ₓ
+      α∘i≡!ₓ = ,-injectiveˡ (!-unique (X , α) [α∘i])
+  
+      α∘i≡idₓ : α ∘ i ≡ idₓ
+      α∘i≡idₓ = trans α∘i≡!ₓ (sym idₓ≡!ₓ)
+  
+      F[α]∘F[i]≡F[idₓ] : F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡ id {F [ X ]}
+      F[α]∘F[i]≡F[idₓ] = begin
+        F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡˘⟨ respect-∘ α i ⟩
+        F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡idₓ ⟩
+        F ⟦ idₓ ⟧ ≡⟨ respect-id ⟩
+        id ∎
+  
+      i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
+      i∘α≡F[idₓ] = trans i∘α≡F[α]∘F[i] F[α]∘F[i]≡F[idₓ]
