@@ -39,8 +39,7 @@ ob C = Category.C₀ C
 hom : (C : Category c ℓ) → Rel (ob C) ℓ
 hom C = Category.C₁ C
 
-id : (C : Category c ℓ) → {x : ob C} → hom C x x
-id C = Category.id C
+open Category using (id)
 
 infixr 9 _∘_
 _∘_ : ∀ {C : Category c ℓ} {x y z} → hom C y z → hom C x y → hom C x z
@@ -52,8 +51,8 @@ record IsFunctor
   (F₀ : ob C → ob D)
   (F₁ : ∀ {x y} → hom C x y → hom D (F₀ x) (F₀ y))
   : Set (c ⊔ ℓ₁ ⊔ ℓ₂) where
-  open Category C using () renaming (_∘_ to _∘₁_)
-  open Category D using () renaming (_∘_ to _∘₂_)
+  open Category C renaming (_∘_ to _∘₁_)
+  open Category D renaming (_∘_ to _∘₂_)
   field
     respect-id : ∀ {x} → F₁ (id C {x}) ≡ id D {F₀ x}
     respect-∘ : ∀ {x y z} {f : hom C x y} {g : hom C y z} → F₁ (g ∘₁ f) ≡ F₁ g ∘₂ F₁ f
@@ -62,8 +61,8 @@ record Functor
   (C : Category c ℓ₁)
   (D : Category d ℓ₂)
   : Set (c ⊔ d ⊔ ℓ₁ ⊔ ℓ₂) where
-  open Category C using () renaming (_∘_ to _∘₁_)
-  open Category D using () renaming (_∘_ to _∘₂_)
+  open Category C renaming (_∘_ to _∘₁_)
+  open Category D renaming (_∘_ to _∘₂_)
   field
     F₀ : ob C → ob D
     F₁ : ∀ {x y} → hom C x y → hom D (F₀ x) (F₀ y)

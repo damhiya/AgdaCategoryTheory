@@ -4,43 +4,27 @@ open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality.Core
 open import Category as Cat hiding (_∘_)
 
+open import Relation.Binary.HeterogeneousEquality.Core
+import Relation.Binary.HeterogeneousEquality as HeteroEq
+  
 module F-algebra {c ℓ} {C : Category c ℓ} {F : Endofunctor C} where
 
-F-algebra : Set (c ⊔ ℓ)
-F-algebra = ∃[ x ] hom C (F [ x ]) x
+open Category C
+open Functor F
 
-carrier : F-algebra → ob C
-carrier (X , α) = X
-  
-algebra : (alg : F-algebra) → hom C (F [ carrier alg ]) (carrier alg)
-algebra (X , α) = α
+Algebra : ob C → Set ℓ
+Algebra X = hom C (F [ X ]) X
 
-record FAlgebraHomomorphism
-  ([X,α] : F-algebra)
-  ([Y,β] : F-algebra)
-  : Set (c ⊔ ℓ) where
-  private
-    X = carrier [X,α]
-    Y = carrier [Y,β]
-    α = algebra [X,α]
-    β = algebra [Y,β]
-    open Category C
-  field
-    m : hom C X Y
-    m∘α≡β∘F[m] : m ∘ α ≡ β ∘ F ⟦ m ⟧
+[_,_]⟶[_,_] : ∀ (X : ob C) (α : Algebra X) (Y : ob C) (β : Algebra Y) → Set ℓ
+[ X , α ]⟶[ Y , β ] = ∃[ m ] m ∘ α ≡ β ∘ F ⟦ m ⟧
 
 infixr 5 _∘₁_
-_∘₁_ : ∀ {[X,α] [Y,β] [Z,γ]} →
-      FAlgebraHomomorphism [Y,β] [Z,γ] →
-      FAlgebraHomomorphism [X,α] [Y,β] →
-      FAlgebraHomomorphism [X,α] [Z,γ]
-_∘₁_ {[X,α] = (X , α)} {[Y,β] = (Y , β)} {[Z,γ] = (Z , γ)} g f =
-  record {m = m; m∘α≡β∘F[m] = m∘α≡γ∘F[m]}
+_∘₁_ : ∀ {X Y Z α β γ} →
+      [ Y , β ]⟶[ Z , γ ] →
+      [ X , α ]⟶[ Y , β ] →
+      [ X , α ]⟶[ Z , γ ]
+_∘₁_ {X} {Y} {Z} {α} {β} {γ} (m₂ , m₂∘β≡γ∘F[m₂]) (m₁ , m₁∘α≡β∘F[m₁]) = m , m∘α≡γ∘F[m]
   where
-    open Category C
-    open Functor F
-    open FAlgebraHomomorphism f renaming (m to m₁; m∘α≡β∘F[m] to m₁∘α≡β∘F[m₁])
-    open FAlgebraHomomorphism g renaming (m to m₂; m∘α≡β∘F[m] to m₂∘β≡γ∘F[m₂])
     open ≡-Reasoning
   
     m : hom C X Z
@@ -55,3 +39,48 @@ _∘₁_ {[X,α] = (X , α)} {[Y,β] = (Y , β)} {[Z,γ] = (Z , γ)} g f =
       (γ ∘ F ⟦ m₂ ⟧) ∘ F ⟦ m₁ ⟧ ≡⟨ ∘-assoc ⟩
       γ ∘ (F ⟦ m₂ ⟧ ∘ F ⟦ m₁ ⟧) ≡˘⟨ cong (γ ∘_) respect-∘ ⟩
       γ ∘ F ⟦ m ⟧ ∎
+
+private
+  ≡-heterogeneous-irrelevantˡ : ∀ {a} {A B : Set a} {w x : A} {y z : B} (p : w ≡ x) (q : y ≡ z) → w ≅ y → p ≅ q
+  ≡-heterogeneous-irrelevantˡ refl refl refl = refl
+
+  Σ-≡,≅→≡ : ∀ {a b} {A : Set a} {B : A → Set b} {p₁@(a₁ , b₁) p₂@(a₂ , b₂) : Σ A B} →
+            a₁ ≡ a₂ → b₁ ≅ b₂ → p₁ ≡ p₂
+  Σ-≡,≅→≡ refl refl = refl
+
+∘₁-assoc : ∀ {X Y Z W α β γ δ}
+             {f : [ X , α ]⟶[ Y , β ]}
+             {g : [ Y , β ]⟶[ Z , γ ]}
+             {h : [ Z , γ ]⟶[ W , δ ]} →
+             (h ∘₁ g) ∘₁ f ≡ h ∘₁ (g ∘₁ f)
+∘₁-assoc {X} {Y} {Z} {W} {α} {β} {γ} {δ} {f} {g} {h} = Σ-≡,≅→≡ ≡-proj₁ ≅-proj₂
+  where
+    mₗ : hom C X W
+    mₗ = proj₁ ((h ∘₁ g) ∘₁ f)
+  
+    mᵣ : hom C X W
+    mᵣ = proj₁ (h ∘₁ (g ∘₁ f))
+  
+    ≡-proj₁ : mₗ ≡ mᵣ
+    ≡-proj₁ = ∘-assoc
+
+    commuteₗ : mₗ ∘ α ≡ δ ∘ F ⟦ mₗ ⟧
+    commuteₗ = proj₂ ((h ∘₁ g) ∘₁ f)
+
+    commuteᵣ : mᵣ ∘ α ≡ δ ∘ F ⟦ mᵣ ⟧
+    commuteᵣ = proj₂ (h ∘₁ (g ∘₁ f))
+  
+    ≅-proj₂ : commuteₗ ≅ commuteᵣ
+    ≅-proj₂ = ≡-heterogeneous-irrelevantˡ commuteₗ commuteᵣ (≡-to-≅ (cong (_∘ α) ≡-proj₁))
+
+id₁ : ∀ {X α} → [ X , α ]⟶[ X , α ]
+id₁ {X} {α} = id , id∘α≡α∘F[id]
+  where
+    open ≡-Reasoning
+
+    id∘α≡α∘F[id] : id ∘ α ≡ α ∘ F ⟦ id ⟧
+    id∘α≡α∘F[id] = begin
+      id ∘ α ≡⟨ id∘f≡f α ⟩
+      α ≡˘⟨ f∘id≡f α ⟩
+      α ∘ id ≡˘⟨ cong (α ∘_) respect-id ⟩
+      α ∘ F ⟦ id ⟧ ∎
