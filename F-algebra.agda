@@ -21,6 +21,9 @@ FAlgebra = ∃[ X ] Extract X
 [_,_]⟶[_,_] : ∀ (X : ob C) (α : Extract X) (Y : ob C) (β : Extract Y) → Set ℓ
 [ X , α ]⟶[ Y , β ] = ∃[ m ] m ∘ α ≡ β ∘ F ⟦ m ⟧
 
+FAlgebraHom : FAlgebra → FAlgebra → Set ℓ
+FAlgebraHom (X , α) (Y , β) = [ X , α ]⟶[ Y , β ]
+  
 infixr 5 _∘₁_
 _∘₁_ : ∀ {X Y Z α β γ} →
       [ Y , β ]⟶[ Z , γ ] →
@@ -86,7 +89,7 @@ id₁∘₁f≡f f = commute-irrelevant (id∘f≡f (proj₁ f))
 f∘₁id₁≡f : ∀ {X Y α β} (f : [ X , α ]⟶[ Y , β ]) → f ∘₁ id₁ ≡ f
 f∘₁id₁≡f f = commute-irrelevant (f∘id≡f (proj₁ f))
 
-FAlgebraIsCategory : IsCategory FAlgebra (λ (X , α) (Y , β) → [ X , α ]⟶[ Y , β ]) _∘₁_ id₁
+FAlgebraIsCategory : IsCategory FAlgebra FAlgebraHom _∘₁_ id₁
 FAlgebraIsCategory = record
   { ∘-assoc = ∘₁-assoc
   ; id∘f≡f = id₁∘₁f≡f
@@ -96,7 +99,7 @@ FAlgebraIsCategory = record
 FAlgebraCategory : Category (c ⊔ ℓ) ℓ
 FAlgebraCategory = record
   { C₀ = FAlgebra
-  ; C₁ = λ (X , α) (Y , β) → [ X , α ]⟶[ Y , β ]
+  ; C₁ = FAlgebraHom
   ; _∘_ = _∘₁_
   ; id = id₁
   ; isCategory = FAlgebraIsCategory
