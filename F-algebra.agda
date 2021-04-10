@@ -2,8 +2,7 @@ open import Level
 open import Data.Product
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality.Core
-open import Category as Cat hiding (_∘_)
-
+open import Category as Cat
 open import Relation.Binary.HeterogeneousEquality.Core
 import Relation.Binary.HeterogeneousEquality as HeteroEq
   
@@ -104,3 +103,19 @@ FAlgebraCategory = record
   ; id = id₁
   ; isCategory = FAlgebraIsCategory
   }
+
+InitialAlgebra : Set (c ⊔ ℓ)
+InitialAlgebra = InitialObject FAlgebraCategory
+
+lambek : ((initial (X , α) ! !-unique) : InitialAlgebra) →
+         IsIsomorphism C (F [ X ]) X α (proj₁ (! (F [ X ] , F ⟦ α ⟧)))
+lambek (initial (X , α) ! !-unique) = {!!}
+  where
+    F[X] : FAlgebra
+    F[X] = F [ X ] , F ⟦ α ⟧
+
+    i,i-comm : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
+    i,i-comm = ! F[X]
+
+    i : hom C X (F [ X ])
+    i = proj₁ i,i-comm
