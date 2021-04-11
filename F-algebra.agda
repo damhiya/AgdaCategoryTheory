@@ -117,31 +117,24 @@ module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
     [i] : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
     [i] = ! (F [ X ] , F ⟦ α ⟧)
     
-    i : hom C X (F [ X ])
-    i = proj₁ [i]
-
     [α∘i] : [ X , α ]⟶[ X , α ]
     [α∘i] = [α] ∘₁ [i]
  
     [!ₓ] : [ X , α ]⟶[ X , α ]
     [!ₓ] = ! (X , α)
  
+    [idₓ] : [ X , α ]⟶[ X , α ]
+    [idₓ] = id₁
+
+    i : hom C X (F [ X ])
+    i = proj₁ [i]
+
     !ₓ : hom C X X
     !ₓ = proj₁ [!ₓ]
  
     idₓ : hom C X X
-    idₓ = id
- 
-    [idₓ] : [ X , α ]⟶[ X , α ]
-    [idₓ] = idₓ , idₓ∘α≡α∘F[idₓ]
-      where
-        idₓ∘α≡α∘F[idₓ] : idₓ ∘ α ≡ α ∘ F ⟦ idₓ ⟧
-        idₓ∘α≡α∘F[idₓ] = begin
-          idₓ ∘ α ≡⟨ id∘f≡f α ⟩
-          α ≡˘⟨ f∘id≡f α ⟩
-          α ∘ id {F [ X ]} ≡˘⟨ cong (α ∘_) respect-id ⟩
-          α ∘ F ⟦ idₓ ⟧ ∎
- 
+    idₓ = proj₁ [idₓ]
+
   lambek : IsIsomorphism C (F [ X ]) X α i
   lambek = i∘α≡F[idₓ] , α∘i≡idₓ
     where
