@@ -145,24 +145,16 @@ module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
   lambek : IsIsomorphism C (F [ X ]) X α i
   lambek = i∘α≡F[idₓ] , α∘i≡idₓ
     where
-      i∘α≡F[α]∘F[i] : i ∘ α ≡ F ⟦ α ⟧ ∘ F ⟦ i ⟧
-      i∘α≡F[α]∘F[i] = proj₂ [i]
-  
-      idₓ≡!ₓ : idₓ ≡ !ₓ
-      idₓ≡!ₓ = ,-injectiveˡ (!-unique (X , α) [idₓ])
-  
-      α∘i≡!ₓ : α ∘ i ≡ !ₓ
-      α∘i≡!ₓ = ,-injectiveˡ (!-unique (X , α) [α∘i])
-  
       α∘i≡idₓ : α ∘ i ≡ idₓ
-      α∘i≡idₓ = trans α∘i≡!ₓ (sym idₓ≡!ₓ)
-  
-      F[α]∘F[i]≡F[idₓ] : F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡ id {F [ X ]}
-      F[α]∘F[i]≡F[idₓ] = begin
+      α∘i≡idₓ = begin
+        α ∘ i ≡⟨ ,-injectiveˡ (!-unique (X , α) [α∘i]) ⟩
+        !ₓ ≡˘⟨ ,-injectiveˡ (!-unique (X , α) [idₓ]) ⟩
+        idₓ ∎
+
+      i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
+      i∘α≡F[idₓ] = begin
+        i ∘ α ≡⟨ proj₂ [i] ⟩
         F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡˘⟨ respect-∘ α i ⟩
         F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡idₓ ⟩
         F ⟦ idₓ ⟧ ≡⟨ respect-id ⟩
         id ∎
-  
-      i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
-      i∘α≡F[idₓ] = trans i∘α≡F[α]∘F[i] F[α]∘F[i]≡F[idₓ]
