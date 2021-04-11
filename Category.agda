@@ -79,10 +79,10 @@ UniqueMorphism : ∀ (C : Category c ℓ) (X Y : ob C) (u : hom C X Y) → Set �
 UniqueMorphism C X Y u = ∀ (u' : hom C X Y) → u' ≡ u
 
 IsInitialObject : ∀ (C : Category c ℓ) (∅ : ob C) (! : ∀ x → hom C ∅ x) → Set (c ⊔ ℓ)
-IsInitialObject C ∅ ! = ∀ x → UniqueMorphism C ∅ x (! x)
+IsInitialObject C ∅ ! = ∀ {x} → UniqueMorphism C ∅ x (! x)
 
 IsTerminalObject : ∀ (C : Category c ℓ) (∗ : ob C) (! : ∀ x → hom C x ∗) → Set (c ⊔ ℓ)
-IsTerminalObject C ∗ ! = ∀ x → UniqueMorphism C x ∗ (! x)
+IsTerminalObject C ∗ ! = ∀ {x} → UniqueMorphism C x ∗ (! x)
 
 record InitialObject (C : Category c ℓ) : Set (c ⊔ ℓ) where
   constructor initial

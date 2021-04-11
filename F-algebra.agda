@@ -117,9 +117,6 @@ module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
     [i] : [ X , α ]⟶[ F [ X ] , F ⟦ α ⟧ ]
     [i] = ! (F [ X ] , F ⟦ α ⟧)
     
-    [α∘i] : [ X , α ]⟶[ X , α ]
-    [α∘i] = [α] ∘₁ [i]
- 
     [!ₓ] : [ X , α ]⟶[ X , α ]
     [!ₓ] = ! (X , α)
  
@@ -138,11 +135,14 @@ module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
   lambek : IsIsomorphism C (F [ X ]) X α i
   lambek = i∘α≡id , α∘i≡id
     where
+      [α∘i]≡[idₓ] : [α] ∘₁ [i] ≡ [idₓ]
+      [α∘i]≡[idₓ] = begin
+        [α] ∘₁ [i] ≡⟨ !-unique ([α] ∘₁ [i]) ⟩
+        [!ₓ] ≡˘⟨ !-unique [idₓ] ⟩
+        [idₓ] ∎
+  
       α∘i≡id : α ∘ i ≡ id
-      α∘i≡id = begin
-        α ∘ i ≡⟨ ,-injectiveˡ (!-unique (X , α) [α∘i]) ⟩
-        !ₓ ≡˘⟨ ,-injectiveˡ (!-unique (X , α) [idₓ]) ⟩
-        idₓ ∎
+      α∘i≡id = ,-injectiveˡ [α∘i]≡[idₓ]
 
       i∘α≡id : i ∘ α ≡ id
       i∘α≡id = begin
