@@ -12,33 +12,34 @@ TransitiveFlip _∼_ = TransFlip _∼_ _∼_ _∼_
 private
   variable
     c d ℓ ℓ₁ ℓ₂ : Level
-  
+
 record IsCategory
-  (C₀ : Set c)
-  (C₁ : Rel C₀ ℓ)
-  (_∘_ : TransitiveFlip C₁)
-  (id : Reflexive C₁)
+  (Ob : Set c)
+  (_⟶_ : Rel Ob ℓ)
+  (_∘_ : TransitiveFlip _⟶_)
+  (id : Reflexive _⟶_)
   : Set (c ⊔ ℓ) where
   field
-    ∘-assoc : ∀ {x y z w} (h : C₁ z w) (g : C₁ y z) (f : C₁ x y) → (h ∘ g) ∘ f ≡ h ∘ (g ∘ f)
-    id∘f≡f : ∀ {x y} (f : C₁ x y) → id ∘ f ≡ f
-    f∘id≡f : ∀ {x y} (f : C₁ x y) → f ∘ id ≡ f
+    ∘-assoc : ∀ {x y z w} (h : z ⟶ w) (g : y ⟶ z) (f : x ⟶ y) → (h ∘ g) ∘ f ≡ h ∘ (g ∘ f)
+    id∘f≡f : ∀ {x y} (f : x ⟶ y) → id ∘ f ≡ f
+    f∘id≡f : ∀ {x y} (f : x ⟶ y) → f ∘ id ≡ f
 
 record Category c ℓ : Set (suc (c ⊔ ℓ)) where
+  infixr 4 _⟶_
   infixr 9 _∘_
   field
-    C₀ : Set c
-    C₁ : Rel C₀ ℓ
-    _∘_ : TransitiveFlip C₁
-    id : Reflexive C₁
-    isCategory : IsCategory C₀ C₁ _∘_ id
+    Ob : Set c
+    _⟶_ : Rel Ob ℓ
+    _∘_ : TransitiveFlip _⟶_
+    id : Reflexive _⟶_
+    isCategory : IsCategory Ob _⟶_ _∘_ id
   open IsCategory isCategory public
 
 ob : (C : Category c ℓ) → Set c
-ob C = Category.C₀ C
+ob C = Category.Ob C
 
 hom : (C : Category c ℓ) → Rel (ob C) ℓ
-hom C = Category.C₁ C
+hom C = Category._⟶_ C
 
 record IsFunctor
   (C : Category c ℓ₁)

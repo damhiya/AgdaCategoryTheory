@@ -13,7 +13,7 @@ open Category C
 open Functor F
 
 Extract : ob C → Set ℓ
-Extract X = hom C (F [ X ]) X
+Extract X = F [ X ] ⟶ X
 
 FAlgebra : Set (c ⊔ ℓ)
 FAlgebra = ∃[ X ] Extract X
@@ -33,7 +33,7 @@ _∘₁_ {X} {Y} {Z} {α} {β} {γ} (m₂ , m₂∘β≡γ∘F[m₂]) (m₁ , m�
   where
     open ≡-Reasoning
   
-    m : hom C X Z
+    m : X ⟶ Z
     m = m₂ ∘ m₁
   
     m∘α≡γ∘F[m] : m ∘ α ≡ γ ∘ F ⟦ m ⟧
@@ -97,8 +97,8 @@ FAlgebraIsCategory = record
 
 FAlgebraCategory : Category (c ⊔ ℓ) ℓ
 FAlgebraCategory = record
-  { C₀ = FAlgebra
-  ; C₁ = FAlgebraHom
+  { Ob = FAlgebra
+  ; _⟶_ = FAlgebraHom
   ; _∘_ = _∘₁_
   ; id = id₁
   ; isCategory = FAlgebraIsCategory
@@ -126,28 +126,28 @@ module _ ((initial (X , α) ! !-unique) : InitialAlgebra) where
     [idₓ] : [ X , α ]⟶[ X , α ]
     [idₓ] = id₁
 
-    i : hom C X (F [ X ])
+    i : X ⟶ F [ X ]
     i = proj₁ [i]
 
-    !ₓ : hom C X X
+    !ₓ : X ⟶ X
     !ₓ = proj₁ [!ₓ]
  
-    idₓ : hom C X X
+    idₓ : X ⟶ X
     idₓ = proj₁ [idₓ]
 
   lambek : IsIsomorphism C (F [ X ]) X α i
-  lambek = i∘α≡F[idₓ] , α∘i≡idₓ
+  lambek = i∘α≡id , α∘i≡id
     where
-      α∘i≡idₓ : α ∘ i ≡ idₓ
-      α∘i≡idₓ = begin
+      α∘i≡id : α ∘ i ≡ id
+      α∘i≡id = begin
         α ∘ i ≡⟨ ,-injectiveˡ (!-unique (X , α) [α∘i]) ⟩
         !ₓ ≡˘⟨ ,-injectiveˡ (!-unique (X , α) [idₓ]) ⟩
         idₓ ∎
 
-      i∘α≡F[idₓ] : i ∘ α ≡ id {F [ X ]}
-      i∘α≡F[idₓ] = begin
+      i∘α≡id : i ∘ α ≡ id
+      i∘α≡id = begin
         i ∘ α ≡⟨ proj₂ [i] ⟩
         F ⟦ α ⟧ ∘ F ⟦ i ⟧ ≡˘⟨ respect-∘ α i ⟩
-        F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡idₓ ⟩
-        F ⟦ idₓ ⟧ ≡⟨ respect-id ⟩
+        F ⟦ α ∘ i ⟧ ≡⟨ cong (F ⟦_⟧) α∘i≡id ⟩
+        F ⟦ id ⟧ ≡⟨ respect-id ⟩
         id ∎
